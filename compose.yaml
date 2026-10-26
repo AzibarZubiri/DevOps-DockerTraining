@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: secreto
+    volumes:
+      - datos:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 5
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: healthy
+    environment:
+      DB_HOST: db
+
+volumes:
+  datos:
